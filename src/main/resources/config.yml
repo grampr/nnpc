@@ -1,0 +1,16 @@
+settings:
+  language: ja
+  autosave-interval-seconds: 60
+  hologram:
+    default-height: 0.3
+  look-at-player:
+    update-interval-ticks: 10
+    radius: 8.0
+  path:
+    update-interval-ticks: 2
+    default-speed: 0.2
+  debug: false
+
+server-transfer:
+  enabled: true
+  channel: BungeeCord

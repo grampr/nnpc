@@ -1,0 +1,68 @@
+name: NehaNPCs
+version: 0.1.0
+main: net.nehaverse.nehanpcs.NehaNPCsPlugin
+api-version: "1.21"
+author: grampr
+description: ZNPCs-style NPC management plugin for Paper.
+depend: [ProtocolLib]
+commands:
+  npc:
+    description: Manage NehaNPCs NPCs.
+    usage: /npc <create|delete|list|teleport|move|skin|lines|height|equip|type|customize|toggle|action|conversation|path|save|reload>
+    aliases: [znpcs]
+permissions:
+  nehanpcs.admin:
+    description: Grants all NehaNPCs permissions.
+    default: op
+    children:
+      nehanpcs.cmd.create: true
+      nehanpcs.cmd.delete: true
+      nehanpcs.cmd.list: true
+      nehanpcs.cmd.teleport: true
+      nehanpcs.cmd.move: true
+      nehanpcs.cmd.skin: true
+      nehanpcs.cmd.lines: true
+      nehanpcs.cmd.height: true
+      nehanpcs.cmd.equip: true
+      nehanpcs.cmd.type: true
+      nehanpcs.cmd.customize: true
+      nehanpcs.cmd.toggle: true
+      nehanpcs.cmd.action: true
+      nehanpcs.cmd.conversation: true
+      nehanpcs.cmd.path: true
+      nehanpcs.cmd.save: true
+      nehanpcs.cmd.reload: true
+  nehanpcs.cmd.create:
+    default: op
+  nehanpcs.cmd.delete:
+    default: op
+  nehanpcs.cmd.list:
+    default: op
+  nehanpcs.cmd.teleport:
+    default: op
+  nehanpcs.cmd.move:
+    default: op
+  nehanpcs.cmd.skin:
+    default: op
+  nehanpcs.cmd.lines:
+    default: op
+  nehanpcs.cmd.height:
+    default: op
+  nehanpcs.cmd.equip:
+    default: op
+  nehanpcs.cmd.type:
+    default: op
+  nehanpcs.cmd.customize:
+    default: op
+  nehanpcs.cmd.toggle:
+    default: op
+  nehanpcs.cmd.action:
+    default: op
+  nehanpcs.cmd.conversation:
+    default: op
+  nehanpcs.cmd.path:
+    default: op
+  nehanpcs.cmd.save:
+    default: op
+  nehanpcs.cmd.reload:
+    default: op
