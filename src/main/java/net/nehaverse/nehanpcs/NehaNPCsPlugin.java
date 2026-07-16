@@ -31,6 +31,7 @@ public final class NehaNPCsPlugin extends JavaPlugin {
     private BukkitTask lookTask;
     private BukkitTask radiusConversationTask;
     private BukkitTask pathTask;
+    private BukkitTask ensureSpawnTask;
 
     @Override
     public void onEnable() {
@@ -48,6 +49,7 @@ public final class NehaNPCsPlugin extends JavaPlugin {
         skinService = new SkinService(this);
         playerNpcService = new PlayerNpcService(this, protocolLibSupport, npcManager, actionExecutor, conversationManager);
         npcManager.playerNpcService(playerNpcService);
+        getServer().getPluginManager().registerEvents(playerNpcService, this);
         conversationManager.load();
         pathManager.load();
         npcManager.loadAndSpawnAll();
@@ -59,13 +61,13 @@ public final class NehaNPCsPlugin extends JavaPlugin {
             command.setTabCompleter(npcCommand);
         }
         getServer().getPluginManager().registerEvents(new NpcInteractListener(npcManager, actionExecutor, conversationManager), this);
-        getServer().getPluginManager().registerEvents(playerNpcService, this);
         getServer().getMessenger().registerOutgoingPluginChannel(this, getConfig().getString("server-transfer.channel", "BungeeCord"));
 
         startAutosave();
         startLookTask();
         startRadiusConversationTask();
         startPathTask();
+        startEnsureSpawnTask();
         getLogger().info("NehaNPCs enabled.");
     }
 
@@ -82,6 +84,9 @@ public final class NehaNPCsPlugin extends JavaPlugin {
         }
         if (pathTask != null) {
             pathTask.cancel();
+        }
+        if (ensureSpawnTask != null) {
+            ensureSpawnTask.cancel();
         }
         if (npcManager != null) {
             npcManager.save();
@@ -100,6 +105,7 @@ public final class NehaNPCsPlugin extends JavaPlugin {
         startLookTask();
         startRadiusConversationTask();
         startPathTask();
+        startEnsureSpawnTask();
     }
 
     private void startAutosave() {
@@ -131,5 +137,12 @@ public final class NehaNPCsPlugin extends JavaPlugin {
         }
         long interval = Math.max(1L, getConfig().getLong("settings.path.update-interval-ticks", 2L));
         pathTask = getServer().getScheduler().runTaskTimer(this, () -> npcManager.tickPathMovement(pathManager), interval, interval);
+    }
+
+    private void startEnsureSpawnTask() {
+        if (ensureSpawnTask != null) {
+            ensureSpawnTask.cancel();
+        }
+        ensureSpawnTask = getServer().getScheduler().runTaskTimer(this, () -> npcManager.ensureSpawnedAll(), 40L, 100L);
     }
 }

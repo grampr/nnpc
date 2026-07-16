@@ -5,6 +5,7 @@ Paper 1.21.x / Java 21 向けの、ZNPCs風NPC管理プラグインです。
 `/npc` と `/znpcs` の両方で操作できます。通常のBukkit/Paper Entity NPCを中心に、作成、保存復元、クリックアクション、会話、パス移動、見た目編集まで実装しています。
 
 ProtocolLibに依存しています。サーバーの `plugins` フォルダへProtocolLib.jarも配置してください。
+Minecraft 1.21.9以降（1.21.11を含む）では、GameProfile対応済みのProtocolLib Development Buildが必要です。5.4.0ではPLAYER NPCを生成できません。Paper 1.21.11ではJava 25を使用してください。Java 26ではPaperのreflection remapperがProtocolLibの動的生成クラスを処理できません。
 
 ## Build
 
@@ -22,8 +23,8 @@ Gradle構成も入っていますが、この環境ではGradle本体が未導�
 
 ## Dependencies
 
-- Paper API `1.21.4-R0.1-SNAPSHOT`
-- ProtocolLib `net.dmulloy2:ProtocolLib:5.4.0`
+- Paper API `1.21.11-R0.1-SNAPSHOT`
+- ProtocolLib `net.dmulloy2:ProtocolLib:5.4.0`（コンパイル用。1.21.11実行時はDevelopment Build）
 
 ## Basic
 

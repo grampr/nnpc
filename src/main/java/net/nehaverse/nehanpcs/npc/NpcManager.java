@@ -109,6 +109,9 @@ public final class NpcManager {
             return false;
         }
         despawn(npc);
+        if (npc.type() == EntityType.PLAYER && playerNpcService != null) {
+            playerNpcService.removeNameTagTeam(npc);
+        }
         save();
         return true;
     }
@@ -130,7 +133,11 @@ public final class NpcManager {
         if (npc == null || (type == EntityType.PLAYER && playerNpcService == null) || (type != EntityType.PLAYER && (!type.isSpawnable() || !type.isAlive()))) {
             return false;
         }
+        boolean wasPlayer = npc.type() == EntityType.PLAYER;
         despawn(npc);
+        if (wasPlayer && type != EntityType.PLAYER && playerNpcService != null) {
+            playerNpcService.removeNameTagTeam(npc);
+        }
         npc.type(type);
         spawn(npc);
         save();
@@ -171,6 +178,22 @@ public final class NpcManager {
         }
     }
 
+    public void ensureSpawnedAll() {
+        for (NpcData npc : npcsById.values()) {
+            if (npc.type() == EntityType.PLAYER) {
+                continue;
+            }
+            if (entityOf(npc).isEmpty()) {
+                spawn(npc);
+            } else if (npc.hologramUuid() == null && npc.showHologram()) {
+                spawnHologram(npc);
+            }
+        }
+        if (playerNpcService != null) {
+            playerNpcService.synchronizeAllViewers();
+        }
+    }
+
     public void save() {
         storageManager.saveNpcs(npcsById.values());
     }
@@ -188,6 +211,8 @@ public final class NpcManager {
             plugin.getLogger().warning(messages.raw("npc-world-missing").replace("%world%", npc.worldName()));
             return;
         }
+        Location spawnLocation = npc.toLocation(world);
+        spawnLocation.getChunk().load();
         if (npc.type() == EntityType.PLAYER) {
             if (playerNpcService != null) {
                 playerNpcService.spawnForAll(npc);
@@ -195,8 +220,12 @@ public final class NpcManager {
             }
             return;
         }
+        if (entityOf(npc).isPresent()) {
+            refresh(npc);
+            return;
+        }
 
-        Entity entity = world.spawnEntity(npc.toLocation(world), npc.type());
+        Entity entity = world.spawnEntity(spawnLocation, npc.type());
         npc.entityUuid(entity.getUniqueId());
         applyAppearance(npc, entity);
         spawnHologram(npc);
@@ -237,6 +266,7 @@ public final class NpcManager {
             return;
         }
         Location location = npc.toLocation(world).add(0.0D, npc.hologramHeight(), 0.0D);
+        location.getChunk().load();
         TextDisplay display = world.spawn(location, TextDisplay.class);
         display.text(messages.component(displayName(npc)));
         display.setBillboard(Display.Billboard.CENTER);
