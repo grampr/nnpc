@@ -162,7 +162,7 @@ public final class NpcCommand implements CommandExecutor, TabCompleter {
 
         messages.send(sender, "list-header", Map.of("%count%", String.valueOf(npcManager.all().size())));
         for (NpcData npc : npcManager.all()) {
-            String line = messages.raw("list-entry")
+            String line = messages.raw(sender, "list-entry")
                     .replace("%id%", String.valueOf(npc.id()))
                     .replace("%type%", npc.type().name())
                     .replace("%name%", npc.name())
@@ -171,7 +171,7 @@ public final class NpcCommand implements CommandExecutor, TabCompleter {
                     .replace("%.1f%x%", String.format(Locale.ROOT, "%.1f", npc.x()))
                     .replace("%.1f%y%", String.format(Locale.ROOT, "%.1f", npc.y()))
                     .replace("%.1f%z%", String.format(Locale.ROOT, "%.1f", npc.z()));
-            sender.sendMessage(messages.component(messages.raw("prefix") + line));
+            sender.sendMessage(messages.component(messages.raw(sender, "prefix") + line));
         }
         return true;
     }
@@ -302,6 +302,7 @@ public final class NpcCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         npc.hologramHeight(height);
+        npcManager.refresh(npc);
         npcManager.save();
         messages.send(sender, "npc-height-set", Map.of("%id%", String.valueOf(npc.id()), "%height%", String.valueOf(height)));
         return true;
@@ -525,12 +526,12 @@ public final class NpcCommand implements CommandExecutor, TabCompleter {
         messages.send(sender, "action-list-header", Map.of("%id%", String.valueOf(id), "%count%", String.valueOf(npc.actions().size())));
         for (int index = 0; index < npc.actions().size(); index++) {
             NpcAction action = npc.actions().get(index);
-            String line = messages.raw("action-list-entry")
+            String line = messages.raw(sender, "action-list-entry")
                     .replace("%action%", String.valueOf(index))
                     .replace("%type%", action.type().name())
                     .replace("%cooldown%", String.valueOf(action.cooldownSeconds()))
                     .replace("%content%", action.content());
-            sender.sendMessage(messages.component(messages.raw("prefix") + line));
+            sender.sendMessage(messages.component(messages.raw(sender, "prefix") + line));
         }
         return true;
     }
@@ -779,7 +780,7 @@ public final class NpcCommand implements CommandExecutor, TabCompleter {
         messages.send(sender, "conversation-text-header", Map.of("%name%", conversation.name(), "%count%", String.valueOf(conversation.lines().size())));
         for (int index = 0; index < conversation.lines().size(); index++) {
             ConversationLine line = conversation.lines().get(index);
-            sender.sendMessage(messages.component(messages.raw("prefix") + messages.raw("conversation-text-entry")
+            sender.sendMessage(messages.component(messages.raw(sender, "prefix") + messages.raw(sender, "conversation-text-entry")
                     .replace("%index%", String.valueOf(index))
                     .replace("%delay%", String.valueOf(line.delayTicks()))
                     .replace("%text%", line.text())));
@@ -794,7 +795,7 @@ public final class NpcCommand implements CommandExecutor, TabCompleter {
         }
         messages.send(sender, "conversation-list-header", Map.of("%count%", String.valueOf(conversationManager.all().size())));
         for (Conversation conversation : conversationManager.all()) {
-            sender.sendMessage(messages.component(messages.raw("prefix") + messages.raw("conversation-list-entry")
+            sender.sendMessage(messages.component(messages.raw(sender, "prefix") + messages.raw(sender, "conversation-list-entry")
                     .replace("%name%", conversation.name())
                     .replace("%lines%", String.valueOf(conversation.lines().size()))
                     .replace("%cooldown%", String.valueOf(conversation.cooldownSeconds()))
@@ -940,7 +941,7 @@ public final class NpcCommand implements CommandExecutor, TabCompleter {
         }
         messages.send(sender, "path-list-header", Map.of("%count%", String.valueOf(pathManager.all().size())));
         for (NpcPath path : pathManager.all()) {
-            sender.sendMessage(messages.component(messages.raw("prefix") + messages.raw("path-list-entry")
+            sender.sendMessage(messages.component(messages.raw(sender, "prefix") + messages.raw(sender, "path-list-entry")
                     .replace("%name%", path.name())
                     .replace("%points%", String.valueOf(path.points().size()))
                     .replace("%speed%", String.valueOf(path.speed()))));

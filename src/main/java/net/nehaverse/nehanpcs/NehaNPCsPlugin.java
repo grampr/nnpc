@@ -37,6 +37,7 @@ public final class NehaNPCsPlugin extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
         saveResource("messages.yml", false);
+        saveResource("messages_en.yml", false);
 
         messages = new MessageUtil(this);
         storageManager = new YamlStorageManager(this);

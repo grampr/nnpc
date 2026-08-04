@@ -77,7 +77,13 @@ public final class YamlStorageManager {
                 npc.skinValue(npcSection.getString("skin.value", ""));
                 npc.skinSignature(npcSection.getString("skin.signature", ""));
                 npc.mirror(npcSection.getBoolean("mirror", false));
-                npc.hologramHeight(npcSection.getDouble("hologram-height", 0.3D));
+                double hologramHeight = npcSection.getDouble(
+                        "hologram-height", NpcData.defaultHologramHeight(type));
+                if (type == EntityType.PLAYER
+                        && Math.abs(hologramHeight - NpcData.LEGACY_HOLOGRAM_HEIGHT) < 0.0001D) {
+                    hologramHeight = NpcData.PLAYER_HOLOGRAM_HEIGHT;
+                }
+                npc.hologramHeight(hologramHeight);
                 npc.showHologram(npcSection.getBoolean("show-hologram", true));
                 npc.lookAtPlayer(npcSection.getBoolean("look-at-player", false));
                 npc.collidable(npcSection.getBoolean("collidable", true));

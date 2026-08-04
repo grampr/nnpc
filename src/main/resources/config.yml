@@ -1,5 +1,8 @@
 settings:
-  language: ja
+  # auto: use each player's Minecraft language. You can also use ja, en, ja_JP, en_US, etc.
+  language: auto
+  # Used by the console and by players whose language file is not installed.
+  fallback-language: en
   autosave-interval-seconds: 60
   hologram:
     default-height: 0.3

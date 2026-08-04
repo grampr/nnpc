@@ -139,6 +139,10 @@ public final class NpcManager {
             playerNpcService.removeNameTagTeam(npc);
         }
         npc.type(type);
+        if (type == EntityType.PLAYER
+                && Math.abs(npc.hologramHeight() - NpcData.LEGACY_HOLOGRAM_HEIGHT) < 0.0001D) {
+            npc.hologramHeight(NpcData.PLAYER_HOLOGRAM_HEIGHT);
+        }
         spawn(npc);
         save();
         return true;

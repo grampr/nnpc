@@ -1,11 +1,15 @@
 # NehaNPCs
 
-Paper 1.21.x / Java 21 向けの、ZNPCs風NPC管理プラグインです。
+NehaNPCs is a ZNPCs-style NPC management plugin for Paper 1.21.x. It supports persistent entity NPCs, packet-based player NPCs, skins, click actions, conversations, paths, equipment, and appearance settings.
 
-`/npc` と `/znpcs` の両方で操作できます。通常のBukkit/Paper Entity NPCを中心に、作成、保存復元、クリックアクション、会話、パス移動、見た目編集まで実装しています。
+Japanese documentation follows the English section.
 
-ProtocolLibに依存しています。サーバーの `plugins` フォルダへProtocolLib.jarも配置してください。
-Minecraft 1.21.9以降（1.21.11を含む）では、GameProfile対応済みのProtocolLib Development Buildが必要です。5.4.0ではPLAYER NPCを生成できません。Paper 1.21.11ではJava 25を使用してください。Java 26ではPaperのreflection remapperがProtocolLibの動的生成クラスを処理できません。
+## Requirements
+
+- Paper 1.21.x
+- Java version required by your Paper build
+- ProtocolLib (required)
+- Paper 1.21.11 requires a compatible ProtocolLib development build. ProtocolLib 5.4.0 does not support PLAYER NPC packets on that server version.
 
 ## Build
 
@@ -13,190 +17,130 @@ Minecraft 1.21.9以降（1.21.11を含む）では、GameProfile対応済みのP
 mvn package
 ```
 
-生成物:
+Output: `target/nehanpcs-0.1.0.jar`
 
-```txt
-target/nehanpcs-0.1.0.jar
-```
+## Commands
 
-Gradle構成も入っていますが、この環境ではGradle本体が未導入だったため、検証はMavenで行っています。
-
-## Dependencies
-
-- Paper API `1.21.11-R0.1-SNAPSHOT`
-- ProtocolLib `net.dmulloy2:ProtocolLib:5.4.0`（コンパイル用。1.21.11実行時はDevelopment Build）
-
-## Basic
-
-```txt
+```text
 /npc create <id> <type> <name...>
+/npc delete <id>
 /npc list
 /npc teleport <id>
 /npc move <id>
-/npc delete <id>
-/npc save
-/npc reload
-```
-
-例:
-
-```txt
-/npc create 1 zombie &aGuide
-/npc create 2 player Notch
-/npc list
-/znpcs teleport 1
-```
-
-## Player NPC
-
-ProtocolLib packetでFake Playerを表示します。
-
-```txt
-/npc create <id> player <name>
 /npc skin <id> <username>
-/npc toggle <id> mirror
-```
-
-`skin` はMojang APIから署名付きtextures propertyを取得して保存します。`mirror` を有効にすると、見るプレイヤーごとに自分のGameProfileを使って表示します。
-
-## Actions
-
-NPCクリック時に複数アクションを実行できます。
-
-```txt
-/npc action add <id> <CMD|CONSOLE|CHAT|MESSAGE|SERVER> <content...>
-/npc action list <id>
-/npc action remove <id> <actionId>
-/npc action cooldown <id> <actionId> <seconds>
-```
-
-例:
-
-```txt
-/npc action add 1 MESSAGE &aWelcome, %player%!
-/npc action add 1 CONSOLE give %player% apple 5
-/npc action cooldown 1 0 5
-```
-
-Placeholders:
-
-```txt
-%player%
-%uuid%
-%world%
-%x%
-%y%
-%z%
-%npc_id%
-%npc_name%
-```
-
-`SERVER` は `server-transfer.channel` のPlugin Messaging Channelを使います。初期値は `BungeeCord` です。
-
-## Appearance
-
-```txt
 /npc lines <id> <text...>
 /npc height <id> <height>
 /npc equip <id> <HAND|OFFHAND|HELMET|CHESTPLATE|LEGGINGS|BOOTS>
 /npc type <id> <type>
 /npc customize <id> <key> <value>
 /npc toggle <id> <look|holo|glow|mirror|collision> [color]
+/npc action <add|list|remove|cooldown> ...
+/npc conversation <create|remove|set|cooldown|radius|text|list> ...
+/npc path <create|point|set|speed|loop|delete|list> ...
+/npc save
+/npc reload
 ```
 
-例:
+`/znpcs` is an alias for `/npc`. Command keywords remain language-neutral; command feedback and usage messages are localized.
 
-```txt
-/npc lines 1 &aGuide|&7Click me
-/npc height 1 2.3
-/npc equip 1 HAND
-/npc type 1 villager
-/npc customize 1 setProfession FARMER
-/npc toggle 1 look
-/npc toggle 1 glow AQUA
-/npc toggle 1 collision
+## Player NPCs
+
+```text
+/npc create 1 player Guide
+/npc skin 1 Notch
+/npc toggle 1 mirror
 ```
 
-`lines` はTextDisplayホログラムで表示します。`height` は表示位置のYオフセットです。`glow` の色は保存されますが、現時点の表示はPaper標準の発光ON/OFFです。
-`collision` をfalseにすると、通常Entity NPCの当たり判定を消せます。
+PLAYER NPCs use ProtocolLib packets for spawning, despawning, tab-list control, skins, and click detection. `mirror` displays each viewer's own skin.
 
-対応済みcustomize:
+## Actions
 
-```txt
-ArmorStand: setSmall, setArms, setBasePlate, setInvisible
-Creeper: setPowered
-Zombie/Ageable: setBaby
-Slime/MagmaCube: setSize
-Sheep: setColor, setSheared
-Villager: setProfession, setVillagerType
-Wolf: setSitting, setTamed, setAngry, setCollarColor
-Fox: setFoxType, setSitting, setSleeping, setCrouching
-Axolotl: setVariant
+```text
+/npc action add <id> <CMD|CONSOLE|CHAT|MESSAGE|SERVER> <content...>
+/npc action list <id>
+/npc action remove <id> <actionId>
+/npc action cooldown <id> <actionId> <seconds>
 ```
 
-## Conversations
+Available placeholders: `%player%`, `%uuid%`, `%world%`, `%x%`, `%y%`, `%z%`, `%npc_id%`, `%npc_name%`.
 
-CLICKまたはRADIUSで会話を再生できます。
+## Languages
 
-```txt
-/npc conversation create <name>
-/npc conversation remove <name>
-/npc conversation set <id> <name> <CLICK|RADIUS>
-/npc conversation cooldown <name> <seconds>
-/npc conversation radius <name> <radius>
-/npc conversation text add <name> <delayTicks> <text...>
-/npc conversation text remove <name> <index>
-/npc conversation text list <name>
-/npc conversation list
+New installations use each player's Minecraft language automatically:
+
+```yaml
+settings:
+  language: auto
+  fallback-language: en
 ```
 
-例:
+Bundled languages:
 
-```txt
-/npc conversation create welcome
-/npc conversation text add welcome 0 &aこんにちは、%player%さん！
-/npc conversation text add welcome 40 &7サーバーへようこそ。
-/npc conversation set 1 welcome CLICK
-```
+- English: `messages_en.yml`
+- Japanese: `messages.yml`
 
-## Paths
-
-登録した地点をNPCがループ移動します。
-
-```txt
-/npc path create <name>
-/npc path point <name>
-/npc path set <id> <name>
-/npc path speed <name> <speed>
-/npc path loop <name> <true|false>
-/npc path delete <name>
-/npc path list
-```
-
-例:
-
-```txt
-/npc path create lobby
-/npc path point lobby
-/npc path point lobby
-/npc path speed lobby 0.25
-/npc path set 1 lobby
-```
+To force one language for everyone, set `settings.language` to `en`, `ja`, `en_US`, or `ja_JP`. To add another language, create a file such as `plugins/NehaNPCs/messages_de_DE.yml`. Missing translations fall back to `settings.fallback-language`.
 
 ## Data Files
 
-```txt
+```text
 plugins/NehaNPCs/config.yml
 plugins/NehaNPCs/messages.yml
+plugins/NehaNPCs/messages_en.yml
 plugins/NehaNPCs/npcs.yml
 plugins/NehaNPCs/conversations.yml
 plugins/NehaNPCs/paths.yml
 ```
 
+NPCs, actions, conversations, paths, skins, hologram settings, and locations are persisted across restarts.
+
 ## Permissions
 
-`nehanpcs.admin` が全権限を含みます。サブコマンド別の権限も `plugin.yml` に定義済みです。
+`nehanpcs.admin` grants every NehaNPCs permission. Individual command permissions are listed in `plugin.yml`.
 
-## Boundary
+---
 
-ProtocolLib packetでPLAYER NPC、skin、mirror、fake spawn/despawn/tablist制御、USE_ENTITY click処理を実装しています。Minecraft/ProtocolLibの細かなpacket仕様差が出る場合は、対象サーバーのProtocolLib版に合わせてPacketContainerのフィールド位置を調整してください。
+## 日本語
+
+NehaNPCsはPaper 1.21.x向けのNPC管理プラグインです。通常エンティティNPCとPLAYER NPC、スキン、クリックアクション、会話、パス移動、装備、見た目設定に対応しています。
+
+### 必要環境
+
+- Paper 1.21.x
+- 使用するPaperが要求するJava
+- ProtocolLib（必須）
+- Paper 1.21.11では対応したProtocolLib Development Buildが必要です。ProtocolLib 5.4.0ではPLAYER NPCのパケットに対応できません。
+
+### 基本操作
+
+```text
+/npc create 1 zombie &a案内人
+/npc create 2 player Guide
+/npc skin 2 Notch
+/npc toggle 2 mirror
+/npc list
+/npc teleport 1
+/npc move 1
+/npc delete 1
+/npc save
+/npc reload
+```
+
+コマンドのサブコマンド名は全言語で共通です。使い方、成功、エラーなどの表示は、プレイヤーがMinecraftで選択している言語へ自動で切り替わります。
+
+### 言語設定
+
+```yaml
+settings:
+  language: auto
+  fallback-language: en
+```
+
+全員を日本語に固定する場合は `language: ja`、英語に固定する場合は `language: en` を指定してください。別の翻訳は `messages_de_DE.yml` のようなファイルを追加すれば利用できます。設定変更後は `/npc reload` を実行します。
+
+### 補足
+
+- NPCの名前や会話文は入力した文字列のまま保存されます。
+- PLAYER NPCのスキンは `/npc skin <id> <username>` で設定します。
+- `collision` を無効にすると通常エンティティNPCの当たり判定を消せます。
+- データはYAMLへ保存され、サーバー再起動後に復元されます。

@@ -13,6 +13,9 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class NpcData {
+    public static final double LEGACY_HOLOGRAM_HEIGHT = 0.3D;
+    public static final double PLAYER_HOLOGRAM_HEIGHT = 2.25D;
+
     private final int id;
     private EntityType type;
     private String name;
@@ -22,7 +25,7 @@ public final class NpcData {
     private double z;
     private float yaw;
     private float pitch;
-    private double hologramHeight = 0.3D;
+    private double hologramHeight;
     private boolean showHologram = true;
     private boolean lookAtPlayer = false;
     private boolean collidable = true;
@@ -48,6 +51,7 @@ public final class NpcData {
         this.id = id;
         this.type = type;
         this.name = name;
+        this.hologramHeight = defaultHologramHeight(type);
         this.profileUuid = UUID.randomUUID();
         updateLocation(location);
     }
@@ -110,6 +114,10 @@ public final class NpcData {
 
     public void hologramHeight(double hologramHeight) {
         this.hologramHeight = hologramHeight;
+    }
+
+    public static double defaultHologramHeight(EntityType type) {
+        return type == EntityType.PLAYER ? PLAYER_HOLOGRAM_HEIGHT : LEGACY_HOLOGRAM_HEIGHT;
     }
 
     public boolean showHologram() {
