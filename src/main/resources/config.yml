@@ -16,4 +16,7 @@ settings:
 
 server-transfer:
   enabled: true
+  # Treat a CMD action such as "server lobby" as a proxy server transfer.
+  intercept-server-command: true
+  # Velocity requires bungee-plugin-message-channel = true in velocity.toml.
   channel: BungeeCord

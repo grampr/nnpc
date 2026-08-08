@@ -64,6 +64,15 @@ PLAYER NPCs use ProtocolLib packets for spawning, despawning, tab-list control, 
 
 Available placeholders: `%player%`, `%uuid%`, `%world%`, `%x%`, `%y%`, `%z%`, `%npc_id%`, `%npc_name%`.
 
+Both action forms below transfer the clicking player to `lobby`:
+
+```text
+/npc action add 1 SERVER lobby
+/npc action add 1 CMD server lobby
+```
+
+For Velocity, enable `bungee-plugin-message-channel = true` in `velocity.toml`. The backend server must use the `BungeeCord` plugin messaging channel configured under `server-transfer.channel`.
+
 ## Languages
 
 New installations use each player's Minecraft language automatically:
@@ -144,3 +153,4 @@ settings:
 - PLAYER NPCのスキンは `/npc skin <id> <username>` で設定します。
 - `collision` を無効にすると通常エンティティNPCの当たり判定を消せます。
 - データはYAMLへ保存され、サーバー再起動後に復元されます。
+- Velocityで `/npc action add 1 CMD server lobby` を使う場合は、`velocity.toml` の `bungee-plugin-message-channel = true` を有効にしてください。`SERVER lobby` アクションでも同じように移動できます。

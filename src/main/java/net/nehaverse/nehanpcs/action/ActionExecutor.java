@@ -40,7 +40,7 @@ public final class ActionExecutor {
         switch (action.type()) {
             case MESSAGE -> player.sendMessage(messages.component(content));
             case CHAT -> player.chat(content);
-            case CMD -> player.performCommand(stripSlash(content));
+            case CMD -> executePlayerCommand(player, content);
             case CONSOLE -> plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), stripSlash(content));
             case SERVER -> sendToServer(player, content);
         }
@@ -50,9 +50,26 @@ public final class ActionExecutor {
         return command.startsWith("/") ? command.substring(1) : command;
     }
 
+    private void executePlayerCommand(Player player, String content) {
+        String command = stripSlash(content).trim();
+        String[] parts = command.split("\\s+", 2);
+        if (plugin.getConfig().getBoolean("server-transfer.intercept-server-command", true)
+                && parts.length == 2
+                && parts[0].equalsIgnoreCase("server")) {
+            sendToServer(player, parts[1].trim());
+            return;
+        }
+        player.performCommand(command);
+    }
+
     private void sendToServer(Player player, String server) {
         if (!plugin.getConfig().getBoolean("server-transfer.enabled", true)) {
             messages.send(player, "server-transfer-disabled");
+            return;
+        }
+        server = server.trim();
+        if (server.isEmpty()) {
+            messages.send(player, "server-transfer-failed");
             return;
         }
         String channel = plugin.getConfig().getString("server-transfer.channel", "BungeeCord");

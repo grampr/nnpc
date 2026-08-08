@@ -70,7 +70,6 @@ public final class PlayerNpcService implements Listener {
 
     public void spawnForAll(NpcData npc) {
         ensureEntityId(npc);
-        ensureNameTagHidden(npc);
         for (Player player : Bukkit.getOnlinePlayers()) {
             spawnFor(player, npc, false);
         }
@@ -119,7 +118,7 @@ public final class PlayerNpcService implements Listener {
             return;
         }
         ensureEntityId(npc);
-        ensureNameTagHidden(npc);
+        ensureNameTagHidden(viewer, npc);
         if (!force && isVisible(viewer, npc)) {
             return;
         }
@@ -233,13 +232,12 @@ public final class PlayerNpcService implements Listener {
     }
 
     private NpcProfile profileFor(Player viewer, NpcData npc) {
-        if (npc.mirror()) {
-            return new NpcProfile(WrappedGameProfile.fromPlayer(viewer), viewer.getUniqueId());
-        }
         UUID profileUuid = npc.profileUuid();
         String profileName = internalProfileName(npc);
         Multimap<String, WrappedSignedProperty> properties = HashMultimap.create();
-        if (!npc.skinValue().isBlank()) {
+        if (npc.mirror()) {
+            properties.putAll("textures", WrappedGameProfile.fromPlayer(viewer).getProperties().get("textures"));
+        } else if (!npc.skinValue().isBlank()) {
             properties.put("textures", new WrappedSignedProperty(
                     "textures",
                     npc.skinValue(),
@@ -274,15 +272,21 @@ public final class PlayerNpcService implements Listener {
     }
 
     public void removeNameTagTeam(NpcData npc) {
-        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-        Team team = scoreboard.getTeam(nameTagTeamName(npc));
-        if (team != null) {
-            team.unregister();
+        Set<Scoreboard> scoreboards = new HashSet<>();
+        scoreboards.add(Bukkit.getScoreboardManager().getMainScoreboard());
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            scoreboards.add(player.getScoreboard());
+        }
+        for (Scoreboard scoreboard : scoreboards) {
+            Team team = scoreboard.getTeam(nameTagTeamName(npc));
+            if (team != null) {
+                team.unregister();
+            }
         }
     }
 
-    private void ensureNameTagHidden(NpcData npc) {
-        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+    private void ensureNameTagHidden(Player viewer, NpcData npc) {
+        Scoreboard scoreboard = viewer.getScoreboard();
         String teamName = nameTagTeamName(npc);
         Team team = scoreboard.getTeam(teamName);
         if (team == null) {
