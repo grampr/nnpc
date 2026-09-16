@@ -1,5 +1,6 @@
 
-<img width="360" height="200" alt="image" src="https://github.com/user-attachments/assets/b05ec1d9-9b3e-49a5-8c60-5326813b68de" />
+<img width="1920" height="1009" alt="2026-09-16_19 44 08" src="https://github.com/user-attachments/assets/bd7c63d5-7052-4971-bbfa-95569d507d8d" />
+
 
 # NehaNPCs
 
