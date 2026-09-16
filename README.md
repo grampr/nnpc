@@ -1,3 +1,6 @@
+
+<img width="360" height="200" alt="image" src="https://github.com/user-attachments/assets/b05ec1d9-9b3e-49a5-8c60-5326813b68de" />
+
 # NehaNPCs
 
 NehaNPCs is a ZNPCs-style NPC management plugin for Paper 1.21.x. It supports persistent entity NPCs, packet-based player NPCs, skins, click actions, conversations, paths, equipment, and appearance settings.
